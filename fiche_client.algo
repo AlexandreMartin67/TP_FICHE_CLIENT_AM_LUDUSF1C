@@ -1,0 +1,119 @@
+PROGRAMME fiche_client
+
+TYPE
+	Tclient = ENREGISTREMENT
+		nom : CHAINE
+		prenom : CHAINE
+		adresse : CHAINE
+		cp : CHAINE
+		ville : CHAINE
+FIN
+
+procedure nom(var ficher_client : Textfile ;var client :Tclient )
+
+	DEBUT
+		ECRIRE('entrer le nom du client')
+		LIRE(client.nom)
+		ECRIRE(ficher_client,client.nom)
+	FIN
+
+procedure prenom(var ficher_client : Textfile ;var client :Tclient )
+
+	DEBUT
+		ECRIRE('entrer le prenom du client')
+		LIRE(client.nom)
+		ECRIRE(ficher_client,client.nom)
+	FIN
+
+procedure adresse(var ficher_client : Textfile ;var client :Tclient )
+
+	DEBUT
+		ECRIRE('entrer l''adresse du client')
+		LIRE(client.nom)
+		ECRIRE(ficher_client,client.nom)
+	FIN
+
+procedure cp(var ficher_client : Textfile ;var client :Tclient )
+
+	DEBUT
+		ECRIRE('entrer le code postal du client')
+		LIRE(client.nom)
+		client.nom<-COPY(client.nom,1,5)
+		ECRIRE(ficher_client,client.nom)
+		FERMER(ficher_client)
+	FIN
+
+procedure ville(var ficher_client : Textfile ;var client :Tclient )
+
+	DEBUT
+		ECRIRE('entrer la ville du client')
+		LIRE(client.nom)
+		ECRIRE(ficher_client,client.nom)
+	FIN
+
+procedure nouvelle_fiche(var ficher_client : Textfile ;var client :Tclient ;compteur :ENTIER)
+
+	DEBUT
+		{$I-}   { disable i/o error checking }
+		AJOUTER(ficher_client)
+		{$I+}   { enable again i/o error checking - important }
+		SI  (IOResult <> 0) ALORS
+			REECRIRE(ficher_client)
+		ECRIRE (ficher_client,'')	
+		ECRIRE (ficher_client,'Client')
+		ECRIRE (ficher_client,compteur)
+		ville (ficher_client ,client)
+		nom (ficher_client ,client)
+		prenom (ficher_client ,client)
+		adresse (ficher_client ,client)
+		cp (ficher_client ,client)
+
+	FIN
+
+procedure lire_les_fiche(var ficher_client : Textfile  ;var client :Tclient )
+
+	Var
+		s :CHAINE
+	DEBUT
+        {$I-}   { disable i/o error checking }
+		OUVRIR(ficher_client)
+		{$I+}   { enable again i/o error checking - important }
+		SI NON (IOResult <> 0) ALORS
+			DEBUT
+				TANT QUE NON Eof(ficher_client) FAIRE
+		           	DEBUT
+		            	LIRE(ficher_client,s)//lit nom dans flux fichier
+		            	ECRIRE(s)
+		            FIN
+		        close(ficher_client)  //ferme le fichier
+		    FIN
+		SINON
+	    	ECRIRE('erreur il n''y as aucune fiche client')
+    FIN
+
+Var
+	ficher_client : Textfile 
+	choix : CHAINE
+	client : Tclient
+	compteur : ENTIER
+
+DEBUT
+	compteur<-0
+	Assign(ficher_client,'fiche_client.txt')
+	REPETER
+		REPETER
+			ECRIRE('1 : Lire les fiche client')
+			ECRIRE('2 : Ecrire une nouvelle fiche')
+			ECRIRE('0 : quitter le programme')
+			choix<-ReadKey
+		JUSQU'A (choix='1') OR (choix='2') OR (choix='0')
+			SI  (choix='1') ALORS
+				lire_les_fiche(ficher_client ,client)
+			SI  (choix='2') ALORS
+				nouvelle_fiche(ficher_client ,client,compteur)
+		LIRE
+		compteur<-compteur+1
+	JUSQU'A (choix='0')
+	ECRIRE('merci d''avoir utiliser ce programme !')
+	
+FIN.
